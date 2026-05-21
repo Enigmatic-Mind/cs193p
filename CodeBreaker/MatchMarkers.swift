@@ -15,16 +15,32 @@ enum Match {
 
 struct MatchMarkers: View {
     var matches: [Match]
+    var pegCount: Int // TODO: need when matches is 0
+    
+//    var body: some View {
+//        let evenIndices = matches.indices
+//            .filter { $0 % 2 == 0 }
+//        
+//        HStack {
+//            ForEach(evenIndices, id: \.self) { index in
+//                VStack {
+//                    matchMarker(peg: index)
+//                    matchMarker(peg: index + 1)
+//                }
+//            }
+//        }
+//    }
     
     var body: some View {
-        let evenIndices = matches.indices
-            .filter { $0 % 2 == 0 }
+        let evenIndices = (0..<pegCount).filter { $0 % 2 == 0 }
         
         HStack {
             ForEach(evenIndices, id: \.self) { index in
                 VStack {
                     matchMarker(peg: index)
-                    matchMarker(peg: index + 1)
+                    if index + 1 < pegCount {
+                        matchMarker(peg: index + 1)
+                    }
                 }
             }
         }
@@ -52,7 +68,7 @@ struct MatchMarkersPreview: View {
             ForEach(matches.indices, id: \.self) { _ in
                 Circle()
             }
-            MatchMarkers(matches: matches)
+            MatchMarkers(matches: matches, pegCount: matches.count)
         }
         .padding()
 
