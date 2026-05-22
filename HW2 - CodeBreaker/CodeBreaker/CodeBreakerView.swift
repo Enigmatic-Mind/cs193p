@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct CodeBreakerView: View {
-    @State var game = CodeBreaker(pegCount: 6, pegChoices: [.brown, .yellow, .orange, .black])
+    @State var game = CodeBreaker(pegCount: Int.random(in: 3...6), pegChoices: [.brown, .yellow, .orange, .black])
     
     var body: some View {
         VStack {
@@ -41,7 +41,7 @@ struct CodeBreakerView: View {
     var restartButton: some View {
         Button {
             withAnimation {
-                game = CodeBreaker(pegCount: 6, pegChoices: [.brown, .yellow, .orange, .black])
+                game = CodeBreaker(pegCount: Int.random(in: 3...6), pegChoices: [.brown, .yellow, .orange, .black])
             }
         } label: {
             Text("Restart Game")
