@@ -19,7 +19,9 @@ struct CodeBreakerView: View {
                     view(for: game.attempts[index])
                 }
             }
-            
+            HStack {
+                restartButton
+            }
         }
         .padding()
     }
@@ -33,6 +35,18 @@ struct CodeBreakerView: View {
             Text("Guess")
         }
         .font(.system(size: 80))
+        .minimumScaleFactor(0.1)
+    }
+    
+    var restartButton: some View {
+        Button {
+            withAnimation {
+                game = CodeBreaker(pegChoices: [.brown, .yellow, .orange, .black])
+            }
+        } label: {
+            Text("Restart Game")
+        }
+        .font(.system(size: 24))
         .minimumScaleFactor(0.1)
     }
     
