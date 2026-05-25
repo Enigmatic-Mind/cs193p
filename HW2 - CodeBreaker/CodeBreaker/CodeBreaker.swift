@@ -15,27 +15,27 @@ struct CodeBreaker {
     var attempts: [Code] = []
     let pegCount: Int
     let pegChoices: [Peg]
-    let gameType: GameType
-    
-    enum GameType: Int {
-        case color = 0
-        case emoji
-    }
-    
-    init(pegCount: Int = 4, gameType: GameType = .color) {
-        self.gameType = gameType
+    var themeTitle: String
+
+    static let themes: [String: [Peg]] = [
+        "Faces":    ["😀", "😎", "🥳", "😤", "🤔", "😴"],
+        "Animals":  ["🐶", "🐱", "🐭", "🐹", "🐰", "🦊"],
+        "Vehicles": ["🚗", "🚕", "🚙", "🚌", "🚎", "🏎️"],
+        "Classic":  ["red", "green", "blue", "yellow", "orange", "purple"],
+    ]
+        
+    init(pegCount: Int = 4, theme: String = "Faces") {
         self.pegCount = pegCount
-        self.pegChoices = switch gameType {
-        case .color: ["red", "green", "blue", "yellow"]
-        case .emoji: ["😀", "😎", "🥳", "😤", "🤔", "😴"]
-        }
+        self.themeTitle = theme
+        self.pegChoices = CodeBreaker.themes[theme]!
         masterCode = Code(kind: .master, pegCount: pegCount)
         guess = Code(kind: .guess, pegCount: pegCount)
         masterCode.randomize(from: pegChoices)
     }
     
     static func randomGame() -> CodeBreaker {
-        CodeBreaker(pegCount: Int.random(in: 3...6), gameType: Bool.random() ? .color : .emoji)
+        let theme = themes.keys.randomElement()!
+        return CodeBreaker(pegCount: Int.random(in: 3...6), theme: theme)
     }
     
     mutating func attemptGuess() {

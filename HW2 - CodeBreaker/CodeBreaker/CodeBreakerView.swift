@@ -12,6 +12,8 @@ struct CodeBreakerView: View {
     
     var body: some View {
         VStack {
+            Text(game.themeTitle)
+                .font(.system(size: 28, weight: .bold))
             view(for: game.masterCode)
             ScrollView {
                 view(for: game.guess)
@@ -46,14 +48,14 @@ struct CodeBreakerView: View {
         } label: {
             Text("Restart Game")
         }
-        .font(.system(size: 24))
+        .font(.system(size: 18))
         .minimumScaleFactor(0.1)
     }
     
     func view(for code: Code) -> some View {
         HStack {
             ForEach(code.pegs.indices, id: \.self) { index in
-                PegView(gameType: game.gameType, value: code.pegs[index])
+                PegView(value: code.pegs[index])
                     .onTapGesture {
                         if code.kind == .guess {
                             game.changeGuessPeg(at: index)
@@ -79,11 +81,9 @@ struct CodeBreakerView: View {
 }
 
 struct PegView: View {
-    let gameType: CodeBreaker.GameType
     let value: String
     var body: some View {
-        switch gameType {
-        case .color:
+        if let color = Color(name: value) {
             RoundedRectangle(cornerRadius: 10)
                 .overlay {
                     if value == Code.missingPeg {
@@ -93,9 +93,8 @@ struct PegView: View {
                 }
                 .contentShape(Rectangle())
                 .aspectRatio(1, contentMode: .fit)
-                .foregroundStyle(Color(name: value) ?? .clear)
-            
-        case .emoji:
+                .foregroundStyle(color)
+        } else {
             Circle()
                 .fill(Color.clear)
                 .contentShape(Circle())
