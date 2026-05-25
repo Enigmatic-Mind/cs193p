@@ -52,7 +52,6 @@ struct MatchMarkersPreview: View {
             ForEach(matches.indices, id: \.self) { _ in
                 Circle()
             }
-            // MatchMarkers(matches: matches, pegCount: matches.count)
             MatchMarkers(matches: matches)
         }
         .padding()
