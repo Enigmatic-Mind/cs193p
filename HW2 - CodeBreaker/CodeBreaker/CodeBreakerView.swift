@@ -93,7 +93,7 @@ struct PegView: View {
                 }
                 .contentShape(Rectangle())
                 .aspectRatio(1, contentMode: .fit)
-                .foregroundStyle(Color.from(peg: value))
+                .foregroundStyle(Color(name: value) ?? .clear)
             
         case .emoji:
             Circle()
@@ -103,7 +103,7 @@ struct PegView: View {
                     if value != Code.missingPeg {
                         Text(value)
                     } else {
-                        Circle()
+                        RoundedRectangle(cornerRadius: 10)
                             .strokeBorder(Color.gray)
                     }
                     
