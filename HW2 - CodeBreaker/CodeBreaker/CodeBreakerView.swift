@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct CodeBreakerView: View {
-    @State var game = CodeBreaker(pegCount: Int.random(in: 3...6), pegChoices: [.brown, .yellow, .orange, .black])
+    @State var game = CodeBreaker.randomGame()
     
     var body: some View {
         VStack {
@@ -41,7 +41,7 @@ struct CodeBreakerView: View {
     var restartButton: some View {
         Button {
             withAnimation {
-                game = CodeBreaker(pegCount: Int.random(in: 3...6), pegChoices: [.brown, .yellow, .orange, .black])
+                game = CodeBreaker.randomGame()
             }
         } label: {
             Text("Restart Game")
@@ -53,21 +53,13 @@ struct CodeBreakerView: View {
     func view(for code: Code) -> some View {
         HStack {
             ForEach(code.pegs.indices, id: \.self) { index in
-                RoundedRectangle(cornerRadius: 10)
-                    .overlay {
-                        if code.pegs[index] == Code.missingPeg {
-                            RoundedRectangle(cornerRadius: 10)
-                                .strokeBorder(Color.gray)
-                        }
-                    }
-                    .contentShape(Rectangle())
-                    .aspectRatio(1, contentMode: .fit)
-                    .foregroundStyle(code.pegs[index])
+                PegView(gameType: game.gameType, value: code.pegs[index])
                     .onTapGesture {
                         if code.kind == .guess {
                             game.changeGuessPeg(at: index)
                         }
                     }
+                    
             }
             
             Rectangle()
@@ -82,6 +74,42 @@ struct CodeBreakerView: View {
                         }
                     }
                 }
+        }
+    }
+}
+
+struct PegView: View {
+    let gameType: CodeBreaker.GameType
+    let value: String
+    var body: some View {
+        switch gameType {
+        case .color:
+            RoundedRectangle(cornerRadius: 10)
+                .overlay {
+                    if value == Code.missingPeg {
+                        RoundedRectangle(cornerRadius: 10)
+                            .strokeBorder(Color.gray)
+                    }
+                }
+                .contentShape(Rectangle())
+                .aspectRatio(1, contentMode: .fit)
+                .foregroundStyle(Color.from(peg: value))
+            
+        case .emoji:
+            Circle()
+                .fill(Color.clear)
+                .contentShape(Circle())
+                .overlay {
+                    if value != Code.missingPeg {
+                        Text(value)
+                    } else {
+                        Circle()
+                            .strokeBorder(Color.gray)
+                    }
+                    
+                }
+                .font(.system(size: 120))
+                .minimumScaleFactor(9/120)
         }
     }
 }

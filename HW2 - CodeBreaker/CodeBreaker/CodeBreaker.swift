@@ -5,9 +5,9 @@
 //  Created by Francisco on 5/20/26.
 //
 
-import SwiftUI
+import Foundation
 
-typealias Peg = Color
+typealias Peg = String
 
 struct CodeBreaker {
     var masterCode: Code = Code(kind: .master)
@@ -15,13 +15,27 @@ struct CodeBreaker {
     var attempts: [Code] = []
     let pegCount: Int
     let pegChoices: [Peg]
+    let gameType: GameType
     
-    init(pegCount: Int = 4, pegChoices: [Peg] = [.red, .green, .blue, .yellow]) {
+    enum GameType: Int {
+        case color = 0
+        case emoji
+    }
+    
+    init(pegCount: Int = 4, gameType: GameType = .color) {
+        self.gameType = gameType
         self.pegCount = pegCount
-        self.pegChoices = pegChoices
+        self.pegChoices = switch gameType {
+        case .color: ["red", "green", "blue", "yellow"]
+        case .emoji: ["😀", "😎", "🥳", "😤", "🤔", "😴"]
+        }
         masterCode = Code(kind: .master, pegCount: pegCount)
         guess = Code(kind: .guess, pegCount: pegCount)
         masterCode.randomize(from: pegChoices)
+    }
+    
+    static func randomGame() -> CodeBreaker {
+        CodeBreaker(pegCount: Int.random(in: 3...6), gameType: Bool.random() ? .color : .emoji)
     }
     
     mutating func attemptGuess() {
@@ -48,7 +62,7 @@ struct Code {
     var kind: Kind
     var pegs: [Peg]
     
-    static let missingPeg: Peg = .clear
+    static let missingPeg: Peg = "clear"
     
     enum Kind: Equatable {
         case master
