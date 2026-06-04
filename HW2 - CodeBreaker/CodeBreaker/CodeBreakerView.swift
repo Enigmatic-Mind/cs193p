@@ -80,38 +80,7 @@ struct CodeBreakerView: View {
     }
 }
 
-struct PegView: View {
-    let value: String
-    var body: some View {
-        if let color = Color(name: value) {
-            RoundedRectangle(cornerRadius: 10)
-                .overlay {
-                    if value == Code.missingPeg {
-                        RoundedRectangle(cornerRadius: 10)
-                            .strokeBorder(Color.gray)
-                    }
-                }
-                .contentShape(Rectangle())
-                .aspectRatio(1, contentMode: .fit)
-                .foregroundStyle(color)
-        } else {
-            Circle()
-                .fill(Color.clear)
-                .contentShape(Circle())
-                .overlay {
-                    if value != Code.missingPeg {
-                        Text(value)
-                    } else {
-                        RoundedRectangle(cornerRadius: 10)
-                            .strokeBorder(Color.gray)
-                    }
-                    
-                }
-                .font(.system(size: 120))
-                .minimumScaleFactor(9/120)
-        }
-    }
-}
+
 
 
 #Preview {
