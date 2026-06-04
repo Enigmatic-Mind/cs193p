@@ -16,6 +16,8 @@ struct CodeBreaker {
     let pegCount: Int
     let pegChoices: [Peg]
     var themeTitle: String
+    var startTime: Date = Date.now
+    var endTime: Date?
 
     static let themes: [String: [Peg]] = [
         "Faces":    ["😀", "😎", "🥳", "😤", "🤔", "😴"],
@@ -33,10 +35,17 @@ struct CodeBreaker {
         masterCode.randomize(from: pegChoices)
     }
     
+    // TODO:
+//    init(pegChoices: [Peg] = [.red, .green, .blue, .yellow]) {
+//        self.pegChoices = pegChoices
+//        masterCode.randomize(from: pegChoices)
+//    }
+    
     var isOver: Bool {
         attempts.last?.pegs == masterCode.pegs
     }
     
+    // TODO: not needed in lecture?
     static func randomGame() -> CodeBreaker {
         let theme = themes.keys.randomElement()!
         return CodeBreaker(pegCount: Int.random(in: 3...6), theme: theme)
@@ -50,6 +59,28 @@ struct CodeBreaker {
         attempt.kind = .attempt(guess.match(against: masterCode))
         attempts.append(attempt)
     }
+    
+    // TODO: lecture
+    mutating func restart() {
+        masterCode.kind = .master(isHidden: true)
+        masterCode.randomize(from: pegChoices)
+        guess.reset()
+        attempts.removeAll()
+        startTime = .now
+        endTime = nil
+    }
+//    
+//    mutating func attemptGuess() {
+//        var attempt = guess
+//        attempt.kind = .attempt(guess.match(against: masterCode))
+//        attempts.append(attempt)
+//        guess.reset()
+//        
+//        if isOver {
+//            masterCode.kind = .master(isHidden: false)
+//            endTime = .now
+//        }
+//    }
     
     mutating func setGuessPeg(_ peg: Peg, at index: Int) {
         guard guess.pegs.indices.contains(index) else { return }
