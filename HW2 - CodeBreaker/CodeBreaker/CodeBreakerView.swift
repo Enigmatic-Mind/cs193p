@@ -33,6 +33,17 @@ struct CodeBreakerView: View {
     
     var body: some View {
         VStack {
+            ZStack {
+                HStack {
+                    Text(game.themeTitle)
+                        .font(.system(size: 28, weight: .bold))
+                }
+                
+                HStack {
+                    Spacer()
+                    restartButton
+                }
+            }
             view(for: game.masterCode)
             ScrollView {
                 if !game.isOver {
@@ -46,7 +57,6 @@ struct CodeBreakerView: View {
                 game.setGuessPeg(peg, at: selection)
                 selection = (selection + 1) % game.masterCode.pegs.count
             }
-            
         }
         .padding()
     }
@@ -69,7 +79,7 @@ struct CodeBreakerView: View {
                 game = CodeBreaker.randomGame()
             }
         } label: {
-            Text("Restart Game")
+            Text("Restart")
         }
         .font(.system(size: 18))
         .minimumScaleFactor(0.1)
@@ -77,16 +87,6 @@ struct CodeBreakerView: View {
     
     func view(for code: Code) -> some View {
         HStack {
-//            ForEach(code.pegs.indices, id: \.self) { index in
-//                PegView(value: code.pegs[index])
-//                    .onTapGesture {
-//                        if code.kind == .guess {
-//                            game.changeGuessPeg(at: index)
-//                        }
-//                    }
-//                    
-//            }
-            
             CodeView(code: code, selection: $selection)
             
             Color.clear.aspectRatio(1, contentMode: .fit)
