@@ -13,20 +13,40 @@ struct CodeBreakerView: View {
     @State private var selection: Int = 0
     
     //MARK: - Body
+//    var body: some View {
+//        VStack {
+//            Text(game.themeTitle)
+//                .font(.system(size: 28, weight: .bold))
+//            view(for: game.masterCode)
+//            ScrollView {
+//                view(for: game.guess)
+//                ForEach(game.attempts.indices.reversed(), id: \.self) { index in
+//                    view(for: game.attempts[index])
+//                }
+//            }
+//            HStack {
+//                restartButton
+//            }
+//        }
+//        .padding()
+//    }
+    
     var body: some View {
         VStack {
-            Text(game.themeTitle)
-                .font(.system(size: 28, weight: .bold))
             view(for: game.masterCode)
             ScrollView {
-                view(for: game.guess)
+                if !game.isOver {
+                    view(for: game.guess)
+                }
                 ForEach(game.attempts.indices.reversed(), id: \.self) { index in
                     view(for: game.attempts[index])
                 }
             }
-            HStack {
-                restartButton
+            PegChooser(choices: game.pegChoices) { peg in
+                game.setGuessPeg(peg, at: selection)
+                selection = (selection + 1) % game.masterCode.pegs.count
             }
+            
         }
         .padding()
     }
@@ -88,4 +108,11 @@ struct CodeBreakerView: View {
 
 #Preview {
     CodeBreakerView()
+}
+
+
+extension Color {
+    static func gray(_ brightness: CGFloat) -> Color {
+        return Color(hue: 148/360, saturation: 0, brightness: brightness)
+    }
 }

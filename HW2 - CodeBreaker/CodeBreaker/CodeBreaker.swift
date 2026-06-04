@@ -33,6 +33,10 @@ struct CodeBreaker {
         masterCode.randomize(from: pegChoices)
     }
     
+    var isOver: Bool {
+        attempts.last?.pegs == masterCode.pegs
+    }
+    
     static func randomGame() -> CodeBreaker {
         let theme = themes.keys.randomElement()!
         return CodeBreaker(pegCount: Int.random(in: 3...6), theme: theme)
@@ -45,6 +49,11 @@ struct CodeBreaker {
         var attempt = guess
         attempt.kind = .attempt(guess.match(against: masterCode))
         attempts.append(attempt)
+    }
+    
+    mutating func setGuessPeg(_ peg: Peg, at index: Int) {
+        guard guess.pegs.indices.contains(index) else { return }
+        guess.pegs[index] = peg
     }
     
     mutating func changeGuessPeg(at index: Int) {

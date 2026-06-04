@@ -9,17 +9,17 @@ import SwiftUI
 
 struct PegView: View {
     //MARK: - Data In
-    let value: Peg
+    let peg: Peg
     
     //MARK: - Body
     
     let pegShape = RoundedRectangle(cornerRadius: 10)
     
     var body: some View {
-        if let color = Color(name: value) {
+        if let color = Color(name: peg) {
             pegShape
                 .overlay {
-                    if value == Code.missingPeg {
+                    if peg == Code.missingPeg {
                         pegShape
                             .strokeBorder(Color.gray)
                     }
@@ -32,8 +32,8 @@ struct PegView: View {
                 .fill(Color.clear)
                 .contentShape(Circle())
                 .overlay {
-                    if value != Code.missingPeg {
-                        Text(value)
+                    if peg != Code.missingPeg {
+                        Text(peg)
                     } else {
                         pegShape
                             .strokeBorder(Color.gray)
