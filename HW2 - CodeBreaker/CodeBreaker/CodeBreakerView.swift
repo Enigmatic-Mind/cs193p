@@ -8,8 +8,11 @@
 import SwiftUI
 
 struct CodeBreakerView: View {
-    @State var game = CodeBreaker.randomGame()
+    //MARK: - Data Owned by Me
+    @State private var game = CodeBreaker.randomGame()
+    @State private var selection: Int = 0
     
+    //MARK: - Body
     var body: some View {
         VStack {
             Text(game.themeTitle)
@@ -54,19 +57,19 @@ struct CodeBreakerView: View {
     
     func view(for code: Code) -> some View {
         HStack {
-            ForEach(code.pegs.indices, id: \.self) { index in
-                PegView(value: code.pegs[index])
-                    .onTapGesture {
-                        if code.kind == .guess {
-                            game.changeGuessPeg(at: index)
-                        }
-                    }
-                    
-            }
+//            ForEach(code.pegs.indices, id: \.self) { index in
+//                PegView(value: code.pegs[index])
+//                    .onTapGesture {
+//                        if code.kind == .guess {
+//                            game.changeGuessPeg(at: index)
+//                        }
+//                    }
+//                    
+//            }
             
-            Rectangle()
-                .foregroundStyle(Color.clear)
-                .aspectRatio(1, contentMode: .fit)
+            CodeView(code: code, selection: $selection)
+            
+            Color.clear.aspectRatio(1, contentMode: .fit)
                 .overlay {
                     if let matches = code.matches {
                         MatchMarkers(matches: matches)
