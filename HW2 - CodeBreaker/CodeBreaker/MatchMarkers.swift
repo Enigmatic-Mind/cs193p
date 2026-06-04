@@ -14,8 +14,10 @@ enum Match {
 }
 
 struct MatchMarkers: View {
+    //MARK: - Data In
     var matches: [Match]
     
+    //MARK: - Body
     var body: some View {
         let evenIndices = matches.indices
             .filter { $0 % 2 == 0 }

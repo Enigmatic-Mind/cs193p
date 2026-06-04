@@ -10,7 +10,7 @@ import Foundation
 typealias Peg = String
 
 struct CodeBreaker {
-    var masterCode: Code = Code(kind: .master)
+    var masterCode: Code = Code(kind: .master(isHidden: true))
     var guess: Code = Code(kind: .guess)
     var attempts: [Code] = []
     let pegCount: Int
@@ -28,7 +28,7 @@ struct CodeBreaker {
         self.pegCount = pegCount
         self.themeTitle = theme
         self.pegChoices = CodeBreaker.themes[theme]!
-        masterCode = Code(kind: .master, pegCount: pegCount)
+        masterCode = Code(kind: .master(isHidden: true), pegCount: pegCount)
         guess = Code(kind: .guess, pegCount: pegCount)
         masterCode.randomize(from: pegChoices)
     }
