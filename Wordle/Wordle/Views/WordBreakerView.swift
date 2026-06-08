@@ -16,7 +16,6 @@ struct WordBreakerView: View {
     @State private var checker = UITextChecker()
     @State private var selection: Int = 0
     @State private var restarting = false
-    @State private var hideMostRecentMarkers = false
     
     var body: some View {
         VStack {
@@ -27,7 +26,8 @@ struct WordBreakerView: View {
             ScrollView {
                 if !game.isOver || restarting {
                     WordView(word: game.guess, selection: $selection) {
-                        Button("Guess", action: guess).flexibleSystemFont()
+                        Button("Guess", action: guess)
+                            .flexibleSystemFont()
                     }
                     .animation(nil, value: game.attempts.count)
                     .opacity(restarting ? 0 : 1)
@@ -79,10 +79,8 @@ struct WordBreakerView: View {
         withAnimation(.guess) {
             game.attemptGuess(isValid: checker.isAWord(game.guess.word.lowercased()))
             selection = 0
-            hideMostRecentMarkers = true
         } completion: {
             withAnimation(.guess) {
-                hideMostRecentMarkers = false
             }
         }
     }

@@ -23,6 +23,7 @@ struct LetterView: View {
                     Text(letter)
                 } else {
                     letterShape
+                        .foregroundStyle(Color.clear)
                 }
             }
             .contentShape(letterShape)

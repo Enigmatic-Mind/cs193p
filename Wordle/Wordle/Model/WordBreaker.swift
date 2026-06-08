@@ -10,8 +10,8 @@ import Foundation
 typealias Letter = String
 
 struct WordBreaker {
-    //MARK: - Data In    
-    var masterCode: Word = Word(kind: .master(isHidden: false))
+    //MARK: - Data In
+    var masterCode: Word = Word(kind: .master(isHidden: true))
     var guess: Word = Word(kind: .guess)
     var attempts: [Word] = []
     
@@ -24,7 +24,7 @@ struct WordBreaker {
     }
     
     mutating func restart(word: String) {
-        masterCode.kind = .master(isHidden: false)
+        masterCode.kind = .master(isHidden: true)
         masterCode.word = word
         guess.reset()
         attempts.removeAll()

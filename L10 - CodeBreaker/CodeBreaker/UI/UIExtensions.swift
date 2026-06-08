@@ -2,13 +2,13 @@
 //  UIExtensions.swift
 //  CodeBreaker
 //
-//  Created by Francisco on 5/29/26.
+//  Created by CS193p Instructor on 4/23/25.
 //
 
 import SwiftUI
 
 extension Animation {
-    static let codeBreaker = Animation.easeInOut
+    static let codeBreaker = Animation.bouncy
     static let guess = Animation.codeBreaker
     static let restart = Animation.codeBreaker
     static let selection = Animation.codeBreaker
@@ -37,3 +37,4 @@ extension Color {
         return Color(hue: 148/360, saturation: 0, brightness: brightness)
     }
 }
+

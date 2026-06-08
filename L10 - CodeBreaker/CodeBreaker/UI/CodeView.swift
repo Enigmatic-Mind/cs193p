@@ -1,15 +1,15 @@
 //
-//  WordView.swift
-//  Wordle
+//  CodeView.swift
+//  CodeBreaker
 //
-//  Created by Francisco on 6/4/26.
+//  Created by CS193p Instructor on 4/16/25.
 //
 
 import SwiftUI
 
-struct WordView<AncillaryView>: View where AncillaryView: View {
+struct CodeView<AncillaryView>: View where AncillaryView: View {
     // MARK: Data In
-    let word: Word
+    let code: Code
     
     // MARK: Data Shared with Me
     @Binding var selection: Int
@@ -21,11 +21,11 @@ struct WordView<AncillaryView>: View where AncillaryView: View {
     @Namespace private var selectionNamespace
     
     init(
-        word: Word,
+        code: Code,
         selection: Binding<Int> = .constant(-1),
         @ViewBuilder ancillaryView: @escaping () -> AncillaryView = { EmptyView() }
     ) {
-        self.word = word
+        self.code = code
         self._selection = selection
         self.ancillaryView = ancillaryView
     }
@@ -34,45 +34,30 @@ struct WordView<AncillaryView>: View where AncillaryView: View {
     
     var body: some View {
         HStack {
-            ForEach(word.letters.indices, id: \.self) { index in
-                LetterView(letter: word.letters[index])
+            ForEach(code.pegs.indices, id: \.self) { index in
+                PegView(peg: code.pegs[index])
                     .padding(Selection.border)
                     .background { // selection background
                         Group {
-                            if selection == index, word.kind == .guess {
+                            if selection == index, code.kind == .guess {
                                 Selection.shape
                                     .foregroundStyle(Selection.color)
                                     .matchedGeometryEffect(id: "selection", in: selectionNamespace)
                             }
-                            
-                            if let matches = word.matches {
-                                switch matches[index] {
-                                case .exact:
-                                    Selection.shape
-                                        .foregroundStyle(Color.green)
-                                case .inexact:
-                                    Selection.shape
-                                        .foregroundStyle(Color.yellow)
-                                default:
-                                    Selection.shape
-                                        .foregroundStyle(Color.clear)
-                                }
-                            }
-                            
                         }
                         .animation(.selection, value: selection)
                     }
                     .overlay { // hidden code obscuring
                         Selection.shape
-                            .foregroundStyle(word.isHidden ? Color.gray : .clear)
+                            .foregroundStyle(code.isHidden ? Color.gray : .clear)
                             .transaction { transaction in
-                                if word.isHidden {
+                                if code.isHidden {
                                     transaction.animation = nil
                                 }
                             }
                     }
                     .onTapGesture {
-                        if word.kind == .guess {
+                        if code.kind == .guess {
                             selection = index
                         }
                     }
@@ -92,3 +77,7 @@ fileprivate struct Selection {
     static let color: Color = Color.gray(0.85)
     static let shape = RoundedRectangle(cornerRadius: cornerRadius)
 }
+
+//#Preview {
+//    CodeView()
+//}
