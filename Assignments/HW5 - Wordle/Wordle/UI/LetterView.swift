@@ -31,6 +31,7 @@ struct LetterView: View {
     }
 }
 
-//#Preview {
-//    LetterView()
-//}
+#Preview {
+    LetterView(letter: "A")
+        .padding()
+}

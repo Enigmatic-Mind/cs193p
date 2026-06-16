@@ -6,35 +6,33 @@
 //
 
 import Foundation
+import SwiftData
 
-enum Match {
-    case noMatch
-    case exact
-    case inexact
-}
-
-struct Word: Equatable {
-    var kind: Kind
+@Model class Word {
+    var _kind: String = Kind.unknown.description
     var letters: [Letter]
+    var timestamp = Date.now
+    
+    var kind: Kind {
+        get { return Kind(_kind) }
+        set { _kind = newValue.description }
+    }
+    
+    init(kind: Kind, letterCount: Int = 5) {
+        self.letters = Array(repeating: Word.missingLetter, count: letterCount)
+        self.kind = kind
+    }
+    
+    init(kind: Kind, letters: [Letter]) {
+        self.letters = letters
+        self.kind = kind
+    }
     
     static let missingLetter: Letter = ""
     
     var word: String {
         get { letters.joined() }
         set { letters = newValue.map { String($0) } }
-    }
-
-    
-    enum Kind: Equatable {
-        case master(isHidden: Bool)
-        case guess
-        case attempt([Match])
-        case unknown
-    }
-    
-    init(kind: Kind, letterCount: Int = 5) {
-        self.kind = kind
-        self.letters = Array(repeating: Word.missingLetter, count: letterCount)
     }
     
     var isHidden: Bool {
@@ -44,7 +42,7 @@ struct Word: Equatable {
         }
     }
     
-    mutating func reset() {
+    func reset() {
         letters = Array(repeating: Word.missingLetter, count: letters.count)
     }
     
@@ -77,4 +75,10 @@ struct Word: Equatable {
             }
         }
     }
+}
+
+enum Match: String {
+    case noMatch
+    case exact
+    case inexact
 }

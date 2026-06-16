@@ -6,28 +6,41 @@
 //
 
 import Foundation
+import SwiftData
 
 typealias Letter = String
 
-@Observable
-class WordBreaker {
+@Model class WordBreaker {
     //MARK: - Data In
     var name: String
-    var masterCode: Word = Word(kind: .master(isHidden: true))
-    var guess: Word = Word(kind: .guess)
-    var attempts: [Word] = []
-    var startTime: Date?
+    @Relationship(deleteRule: .cascade) var masterCode: Word = Word(kind: .master(isHidden: true))
+    @Relationship(deleteRule: .cascade) var guess: Word = Word(kind: .guess)
+    @Relationship(deleteRule: .cascade) var _attempts: [Word] = []
+    @Transient var startTime: Date?
     var endTime: Date?
     var elapsedTime: TimeInterval = 0
+    var lastAttemptDate: Date? = Date.now
+    var isOver: Bool = false
+    
+    var attempts: [Word] {
+        get { _attempts.sorted { $0.timestamp > $1.timestamp } }
+        set { _attempts = newValue }
+    }
     
     init(name: String = "Wordle", masterCode: String) {
         self.name = name
         self.masterCode.word = masterCode
     }
     
+    func updateElapsedTime() {
+        pauseTimer()
+        startTimer()
+    }
+    
     func startTimer() {
         if startTime == nil, !isOver {
             startTime = .now
+            elapsedTime += 0.00001
         }
     }
     
@@ -37,11 +50,7 @@ class WordBreaker {
         }
         startTime = nil
     }
-    
-    var isOver: Bool {
-        attempts.last?.letters == masterCode.letters
-    }
-    
+
     func restart(word: String) {
         masterCode.kind = .master(isHidden: true)
         masterCode.word = word
@@ -50,6 +59,7 @@ class WordBreaker {
         startTime = .now
         endTime = nil
         elapsedTime = 0
+        isOver = false
     }
     
     func attemptGuess(isValid: Bool) {
@@ -57,12 +67,18 @@ class WordBreaker {
               !attempts.contains(where: { $0.letters == guess.letters }),
               isValid else { return }
         
-        var attempt = guess
-        attempt.kind = .attempt(guess.match(against: masterCode))
-        attempts.append(attempt)
+        let attempt = Word(kind: .attempt(guess.match(against: masterCode)), letters: guess.letters)
+        
+//        var attempt = guess
+//        attempt.kind = .attempt(guess.match(against: masterCode))
+//        attempts.append(attempt)
+        
+        attempts.insert(attempt, at: 0)
+        lastAttemptDate = .now
         guess.reset()
 
-        if isOver {
+        if attempts.first?.letters == masterCode.letters {
+            isOver = true
             endTime = .now
             masterCode.kind = .master(isHidden: false)
             pauseTimer()
@@ -75,12 +91,12 @@ class WordBreaker {
     }
 }
 
-extension WordBreaker: Identifiable, Hashable, Equatable {
-    static func == (lhs: WordBreaker, rhs: WordBreaker) -> Bool {
-        return lhs.id == rhs.id
-    }
-    
-    func hash(into hasher: inout Hasher) {
-        hasher.combine(id)
-    }
-}
+//extension WordBreaker: Identifiable, Hashable, Equatable {
+//    static func == (lhs: WordBreaker, rhs: WordBreaker) -> Bool {
+//        return lhs.id == rhs.id
+//    }
+//    
+//    func hash(into hasher: inout Hasher) {
+//        hasher.combine(id)
+//    }
+//}

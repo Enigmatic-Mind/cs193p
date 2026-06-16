@@ -6,21 +6,62 @@
 //
 
 import SwiftUI
+import SwiftData
 
 struct GameList: View {
     //MARK: - Data In
     @Environment(\.words) var words
+    @Environment(\.modelContext) var modelContext
     
     //MARK: - Data Shared with Me
     @Binding var selection: WordBreaker?
+    @Query private var games: [WordBreaker]
     
     //MARK: - Data Owned by Me
-    @State private var games: [WordBreaker] = []
+    //@State private var games: [WordBreaker] = []
     @State private var gameToEdit: WordBreaker?
+    let search: String
+    var filteredGames: [WordBreaker] {
+        games.filter { game in
+            guard !search.isEmpty else { return true }
+            
+            let matchesName = game.name.lowercased().contains(search.lowercased())
+            let matchesAttempt = game.attempts.contains { $0.word.lowercased() == search.lowercased() }
+            let matchesMaster = game.isOver && game.masterCode.word.lowercased() == search.lowercased()
+            
+            return matchesName || matchesAttempt || matchesMaster
+        }
+    }
+    
+    
+    init(sortBy: SortOption = .all, nameContains search: String = "", selection: Binding<WordBreaker?>) {
+        _selection = selection
+        self.search = search
+        let completedOnly = sortBy == .completed
+        let predicate = #Predicate<WordBreaker> { game in
+            (!completedOnly || game.isOver)
+        }
+        switch sortBy {
+        case .all: _games = Query(filter: predicate, sort: \WordBreaker.lastAttemptDate, order: .reverse)
+        case .completed: _games = Query(filter: predicate, sort: \WordBreaker.lastAttemptDate, order: .reverse)
+        }
+    }
+    
+    enum SortOption: CaseIterable {
+        case all
+        case completed
+        
+        var title: String {
+            switch self {
+            case .all: "All"
+            case .completed: "Completed"
+            }
+        }
+    }
     
     var body: some View {
         List(selection: $selection) {
-            ForEach(games) { game in
+            ForEach(filteredGames) { game in
                 NavigationLink(value: game) {
                     GameSummary(game: game)
                 }
@@ -34,27 +75,15 @@ struct GameList: View {
                 }
             }
             .onDelete { offsets in
-                games.remove(atOffsets: offsets)
-            }
-            .onMove { offsets, destination in
-                games.move(fromOffsets: offsets, toOffset: destination)
+                //games.remove(atOffsets: offsets)
+                for offset in offsets {
+                    modelContext.delete(filteredGames[offset])
+                }
             }
         }
         .onChange(of: games) {
             if let selection, !games.contains(selection) {
                 self.selection = nil
-            }
-        }
-        .onChange(of: selection?.attempts) { oldValue, newValue in
-            guard let selection else { return }
-            guard let currentIndex = games.firstIndex(of: selection) else { return }
-            
-            let oldCount = oldValue?.count ?? 0
-            let newCount = newValue?.count ?? 0
-            guard newCount > oldCount else { return }
-            
-            withAnimation {
-                games.move(fromOffsets: IndexSet(integer: currentIndex), toOffset: 0)
             }
         }
         .listStyle(.plain)
@@ -74,7 +103,8 @@ struct GameList: View {
         Button("Add Game", systemImage: "plus") {
             let masterCode = words.random(length: 5)
             let gameToEdit = WordBreaker(masterCode: masterCode ?? "AWAIT")
-            games.insert(gameToEdit, at: 0)
+            //games.insert(gameToEdit, at: 0)
+            modelContext.insert(gameToEdit)
         }
 //        .sheet(isPresented: showGameEditor) {
 //            gameEditor
@@ -84,13 +114,14 @@ struct GameList: View {
     func deleteButton(for game: WordBreaker) -> some View {
         Button("Delete", systemImage: "minus.circle", role: .destructive) {
             withAnimation {
-                games.removeAll { $0 == game }
+                //games.removeAll { $0 == game }
+                modelContext.delete(game)
             }
         }
     }
 }
 
-#Preview {
+#Preview(traits: .swiftData) {
     @Previewable @State var selection: WordBreaker?
     NavigationStack {
         GameList(selection: $selection)

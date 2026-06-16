@@ -8,6 +8,8 @@
 import SwiftUI
 
 struct WordBreakerView: View {
+    // MARK: Data In
+    @Environment(\.scenePhase) var scenePhase
     
     //MARK: - Data Shared with Me
     let game: WordBreaker
@@ -32,8 +34,8 @@ struct WordBreakerView: View {
                     .opacity(restarting ? 0 : 1)
                 }
                 
-                ForEach(game.attempts.indices.reversed(), id: \.self) { index in
-                    WordView(word: game.attempts[index]) {
+                ForEach(game.attempts, id: \.letters) { attempt in
+                    WordView(word: attempt) {
                         
                     }
                     .transition(.attempt(game.isOver))
@@ -47,10 +49,18 @@ struct WordBreakerView: View {
             }
             
         }
-        .padding()
         .onAppear {
-            print("\(game.masterCode)")
+            print("\(game.masterCode.word)")
         }
+        .trackElapsedTime(in: game)
+        .toolbar {
+            ToolbarItem {
+                ElapsedTime(startTime: game.startTime, endTime: game.endTime, elapsedTime: game.elapsedTime)
+                    .monospaced()
+                    .lineLimit(1)
+            }
+        }
+        .padding()
     }
     
     func changePegAtSelection(to letter: Letter) {
@@ -69,9 +79,10 @@ struct WordBreakerView: View {
     }
 }
 
-#Preview {
+#Preview(traits: .swiftData) {
     @Previewable @State var game = WordBreaker(name: "Preview", masterCode: "AWAIT")
     NavigationStack {
         WordBreakerView(game: game)
     }
 }
+

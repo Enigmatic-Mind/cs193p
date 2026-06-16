@@ -36,3 +36,10 @@ struct LetterChooser: View {
         }
     }
 }
+
+#Preview {
+    LetterChooser { letter in
+        print("choose \(letter)")
+    }
+    .padding()
+}

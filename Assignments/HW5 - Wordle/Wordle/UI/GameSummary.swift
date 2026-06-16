@@ -13,14 +13,14 @@ struct GameSummary: View {
     var body: some View {
         VStack(alignment: .leading) {
             Text(game.name).font(.title)
-            WordView(word: game.attempts.last ?? game.guess)
+            WordView(word: game.attempts.first ?? game.guess)
                 .frame(maxHeight: 50)
             Text("^[\(game.attempts.count) attempt](inflect: true)")
         }
     }
 }
 
-#Preview {
+#Preview(traits: .swiftData) {
     List {
         GameSummary(game: WordBreaker(name: "Preview", masterCode: "AWAIT"))
     }

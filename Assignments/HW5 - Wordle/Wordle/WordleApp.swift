@@ -6,14 +6,14 @@
 //
 
 import SwiftUI
+import SwiftData
 
 @main
 struct WordleApp: App {
     var body: some Scene {
         WindowGroup {
-            // TODO:
-            //WordBreakerView()
             GameChooser()
+                .modelContainer(for: WordBreaker.self)
         }
     }
 }
