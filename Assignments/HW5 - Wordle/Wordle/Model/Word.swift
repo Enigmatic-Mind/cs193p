@@ -10,7 +10,8 @@ import SwiftData
 
 @Model class Word {
     var _kind: String = Kind.unknown.description
-    var letters: [Letter]
+    //var letters: [Letter]
+    var _letters: String = ""
     var timestamp = Date.now
     
     var kind: Kind {
@@ -18,21 +19,26 @@ import SwiftData
         set { _kind = newValue.description }
     }
     
+    var letters: [Letter] {
+        get { _letters.map{ String($0) } }
+        set { _letters = newValue.joined() }
+    }
+    
     init(kind: Kind, letterCount: Int = 5) {
-        self.letters = Array(repeating: Word.missingLetter, count: letterCount)
+        self._letters = String(repeating: " ", count: letterCount)
         self.kind = kind
     }
     
     init(kind: Kind, letters: [Letter]) {
-        self.letters = letters
+        self._letters = letters.joined()
         self.kind = kind
     }
     
-    static let missingLetter: Letter = ""
+    static let missingLetter: Letter = " "
     
     var word: String {
-        get { letters.joined() }
-        set { letters = newValue.map { String($0) } }
+        get { _letters }
+        set { _letters = newValue }
     }
     
     var isHidden: Bool {
