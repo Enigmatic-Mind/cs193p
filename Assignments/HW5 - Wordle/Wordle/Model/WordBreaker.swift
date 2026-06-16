@@ -90,13 +90,3 @@ typealias Letter = String
         guess.letters[index] = letter
     }
 }
-
-//extension WordBreaker: Identifiable, Hashable, Equatable {
-//    static func == (lhs: WordBreaker, rhs: WordBreaker) -> Bool {
-//        return lhs.id == rhs.id
-//    }
-//    
-//    func hash(into hasher: inout Hasher) {
-//        hasher.combine(id)
-//    }
-//}

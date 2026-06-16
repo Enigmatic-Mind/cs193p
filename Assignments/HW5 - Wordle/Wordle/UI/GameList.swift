@@ -20,14 +20,15 @@ struct GameList: View {
     //MARK: - Data Owned by Me
     //@State private var games: [WordBreaker] = []
     @State private var gameToEdit: WordBreaker?
+    @State private var showSettings: Bool = false
     let search: String
     var filteredGames: [WordBreaker] {
         games.filter { game in
             guard !search.isEmpty else { return true }
             
             let matchesName = game.name.lowercased().contains(search.lowercased())
-            let matchesAttempt = game.attempts.contains { $0.word.lowercased() == search.lowercased() }
-            let matchesMaster = game.isOver && game.masterCode.word.lowercased() == search.lowercased()
+            let matchesAttempt = game.attempts.contains { $0.word.lowercased().contains(search.lowercased()) }
+            let matchesMaster = game.isOver && game.masterCode.word.lowercased().contains(search.lowercased())
             
             return matchesName || matchesAttempt || matchesMaster
         }
@@ -88,8 +89,15 @@ struct GameList: View {
         }
         .listStyle(.plain)
         .toolbar {
-            addButton
-            EditButton() // editing the List of games
+            ToolbarItem(placement: .topBarLeading) {
+                settingsButton
+            }
+            ToolbarItem(placement: .primaryAction) {
+                addButton
+            }
+            ToolbarItem(placement: .secondaryAction) {
+                EditButton()
+            }
         }
     }
     
@@ -101,7 +109,7 @@ struct GameList: View {
     
     var addButton: some View {
         Button("Add Game", systemImage: "plus") {
-            let masterCode = words.random(length: 5)
+            let masterCode = words.random(length: SettingsViewModel.shared.wordLength)
             let gameToEdit = WordBreaker(masterCode: masterCode ?? "AWAIT")
             //games.insert(gameToEdit, at: 0)
             modelContext.insert(gameToEdit)
@@ -109,6 +117,15 @@ struct GameList: View {
 //        .sheet(isPresented: showGameEditor) {
 //            gameEditor
 //        }
+    }
+    
+    var settingsButton: some View {
+        Button("Settings", systemImage: "gear") {
+            showSettings = true
+        }
+        .sheet(isPresented: $showSettings) {
+            SettingsView()
+        }
     }
     
     func deleteButton(for game: WordBreaker) -> some View {

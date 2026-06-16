@@ -24,7 +24,7 @@ import SwiftData
         set { _letters = newValue.joined() }
     }
     
-    init(kind: Kind, letterCount: Int = 5) {
+    init(kind: Kind, letterCount: Int = SettingsViewModel.shared.wordLength) {
         self._letters = String(repeating: " ", count: letterCount)
         self.kind = kind
     }
